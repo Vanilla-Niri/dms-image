@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ "$1" == "--tty" ]; then
+    echo "Are you sure you want to reset the VSO? This will remove all your installed software in the subsystem. [y/N]"
+    read -r answer
+    if [ "$answer" != "y" ]; then
+        exit
+    fi
+else
+    adwdialog --title "Reset VSO?" \
+              --description "Are you sure you want to reset the VSO? This will remove all your installed software in the subsystem." \
+              --type "question" \
+              --icon "org.vanillaos.VSO"
+    if [ $? -ne 0 ]; then
+        exit
+    fi
+fi
+
+# Commands used to remove terminal configuration for apx-vso-native below
+
+
+
+podman rm -f apx-vso-native
+
+if [ "$1" == "--tty" ]; then
+    echo "VSO subsystem has been removed successfully. Do you want to re-initialize it now? [y/N]"
+    read -r answer
+    if [ "$answer" != "y" ]; then
+        exit
+    fi
+else
+    adwdialog --title "Re-initialize VSO?" \
+              --description "VSO subsystem has been removed successfully. Do you want to re-initialize it now?" \
+              --type "question" \
+              --icon "org.vanillaos.VSO"
+    if [ $? -ne 0 ]; then
+        exit
+    fi
+fi
+
+vso native init

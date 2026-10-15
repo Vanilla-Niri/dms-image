@@ -1,0 +1,5 @@
+name: remove-unnecessities
+type: shell
+commands:
+  - echo # Remove this line
+  #- apt remove -y vanilla-first-setup

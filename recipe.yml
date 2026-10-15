@@ -1,0 +1,43 @@
+name: Vanilla Custom Desktop
+id: custom
+vibversion: 1.1.0
+
+stages:
+- id: build
+  base: ghcr.io/vanilla-kde/base:dev
+  addincludes: true
+  singlelayer: false
+  labels:
+    maintainer: im_a_maintainer
+  args:
+    DEBIAN_FRONTEND: noninteractive
+  runs:
+    commands:
+      - echo 'APT::Install-Recommends "1";' > /etc/apt/apt.conf.d/01norecommends
+  cleanup:
+    - /tmp/*
+    - /var/tmp/*
+
+  modules:
+  - name: init-setup
+    type: shell
+    commands:
+    - lpkg --unlock
+    - apt update
+    - apt clean
+    - apt-mark hold plasma-discover-backend-snap
+
+  - name: packages-modules
+    type: includes
+    includes:
+      - modules/00-remove-unnecessities.yml
+      - modules/00-vanilla-backgrounds.yml
+      - modules/50-desktop-environment.yml
+      - modules/80-set-image-abroot-config.yml
+      - modules/99-cleanup.yml
+  - name: cleanup-and-sysconf-setup
+    type: shell
+    commands:
+    - apt autoremove -y
+    - apt clean
+    - lpkg --lock
